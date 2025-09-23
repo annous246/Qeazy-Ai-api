@@ -1,22 +1,23 @@
 from flask import Flask, request, jsonify
 from summarizer.hf_script import summary
-from chromaInit.chroma import get_collection
+from chromaInit.chroma import collection
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
     return "Flask Summarizer Running!"
-
-@app.route("/categories", methods=["POST"])
+@app.route("/categories",methods=["POST"])
 def get_categories():
-    categories = []
-    if request.method == "POST":
+    categories=[]
+    print("sending cats")
+    if(request.method=="POST"):
         data = request.get_json()
         text = data.get("text")
-        collection = get_collection()  # lazy load on first request
-        categories = collection.query(query_texts=text, n_results=3)
-    return jsonify({"categories": categories['documents'][0]})
+        categories=collection.query(query_texts=text,n_results=3)
+    print(categories)
+    return jsonify({"categories":categories['documents'][0]})
+    
 
 @app.route("/summarize", methods=["POST"])
 def summarize_text():
@@ -27,9 +28,11 @@ def summarize_text():
     text = data["text"]
     try:
         result = summary(text)
+        print(result)
+
         return jsonify({"summary": result})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+    app.run(app,host="0.0.0.0", port=5001)
