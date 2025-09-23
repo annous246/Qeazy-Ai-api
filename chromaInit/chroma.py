@@ -1,14 +1,15 @@
 import chromadb
-from chromadb.config import Settings
 from chromadb.utils import embedding_functions
 import os
 from .categories import categories_list
 
+folder = os.path.join(os.getcwd(), "chromaInit")
 
-folder = os.path.join(os.getcwd(),"chromaInit")
-
-
+# Globals
+client = None
+collection = None
 _embeddings = None
+
 def get_embeddings():
     global _embeddings
     if _embeddings is None:
@@ -18,14 +19,19 @@ def get_embeddings():
         )
     return _embeddings
 
-
-
-client = chromadb.PersistentClient(path=folder)
-
-collection = client.get_or_create_collection("categories")
-collection.upsert(
-   documents = categories_list
-,
-     ids=[str(i) for i,element in enumerate(categories_list)]
- )
-element=collection.get(ids=[str(i) for i,element in enumerate(categories_list)])
+def get_collection():
+    global client, collection
+    if client is None:
+        client = chromadb.PersistentClient(path=folder)
+    if collection is None:
+        collection = client.get_or_create_collection(
+            name="categories",
+            embedding_function=get_embeddings()
+        )
+        # Only insert docs if empty
+        if collection.count() == 0:
+            collection.upsert(
+                documents=categories_list,
+                ids=[str(i) for i in range(len(categories_list))]
+            )
+    return collection
