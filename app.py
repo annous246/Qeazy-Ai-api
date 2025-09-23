@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from summarizer.hf_script import summary
 from chromaInit.chroma import collection
-
+import os
 app = Flask(__name__)
 
 @app.route("/")
@@ -35,4 +35,6 @@ def summarize_text():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(app,host="0.0.0.0", port=5001)
+    port = int(os.environ.get("PORT", 8080))  # Use Railway's PORT or default to 8080
+    host = "0.0.0.0"  # Bind to all interfaces for Railway
+    app.run(host=host, port=port, debug=False)
