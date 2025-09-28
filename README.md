@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img src="src/assets/logo.png" alt="Qeazy Summarizer Icon" width="250"/> 
+  <img src="logo.png" alt="Qeazy Summarizer Icon" width="250"/> 
 </p>
 
 # <h1 align="center">Qeazy Summarizer Microservice</h1>
